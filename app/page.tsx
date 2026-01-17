@@ -469,29 +469,16 @@ useEffect(() => {
   }, [w, h, paths, endpointMap, endpointsByColor, colorsCount]);
 
   const isSolved = solveCheck.ok;
-import { useEffect, useMemo, useRef, useState } from "react";
   // Confetti on solve (optional — works only if you installed canvas-confetti)
   const solvedOnceRef = useRef(false);
-  useEffect(() => {
-    if (!isSolved) {
-      solvedOnceRef.current = false;
-      return;
-    }
-    if (solvedOnceRef.current) return;
-    solvedOnceRef.current = true;
+  const [showCelebrate, setShowCelebrate] = useState(false);
 
-    // dynamic import avoids module format issues
-    import("canvas-confetti")
-      .then((mod) => {
-        const confetti = (mod as any).default ?? mod;
-        confetti({
-          particleCount: 160,
-          spread: 70,
-          origin: { y: 0.6 },
-        });
-      })
-      .catch(() => {});
-  }, [isSolved]);
+useEffect(() => {
+  if (!isSolved) return;
+  setShowCelebrate(true);
+  const t = setTimeout(() => setShowCelebrate(false), 1400);
+  return () => clearTimeout(t);
+}, [isSolved]);
 
   const boardPxW = w * CELL + (w - 1) * GAP;
   const boardPxH = h * CELL + (h - 1) * GAP;
@@ -515,7 +502,17 @@ import { useEffect, useMemo, useRef, useState } from "react";
         Board: {w}×{h} • Variants: {ALL_BOARDS.length}
       </p>
     </div>
-
+{showCelebrate && (
+  <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
+    <div className="rounded-2xl bg-white/90 backdrop-blur px-6 py-4 shadow-xl ring-1 ring-black/5 animate-[pop_400ms_ease-out]">
+      <div className="text-center">
+        <div className="text-2xl">🎉</div>
+        <div className="text-lg font-semibold text-gray-900">Solved!</div>
+        <div className="text-sm text-gray-600">Nice one 💛</div>
+      </div>
+    </div>
+  </div>
+)}
     {/* Centering wrapper */}
     <div className="flex justify-center">
       {/* Board frame */}
@@ -651,11 +648,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
         Clear
       </button>
     </div>
-
-    <p className="mt-4 text-sm text-gray-700 text-center max-w-md mx-auto">
-      Click a dot to restart that color. Drag orthogonally to draw. Click any
-      line cell to clear that color. Full fill required to win.
-    </p>
 
     <p className="mt-2 text-xs text-gray-500 text-center">
       Made with ❤️ for my little baby so she can play colourlink anytime she wants.
