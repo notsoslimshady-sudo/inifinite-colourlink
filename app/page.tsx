@@ -469,7 +469,7 @@ useEffect(() => {
   }, [w, h, paths, endpointMap, endpointsByColor, colorsCount]);
 
   const isSolved = solveCheck.ok;
-
+import { useEffect, useMemo, useRef, useState } from "react";
   // Confetti on solve (optional — works only if you installed canvas-confetti)
   const solvedOnceRef = useRef(false);
   useEffect(() => {
